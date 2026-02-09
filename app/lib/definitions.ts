@@ -17,7 +17,7 @@ export type Participant = {
   image_url: string;
   team_id: string;
 };
-
+//
 export type Team = {
   id: string;
   name: string;

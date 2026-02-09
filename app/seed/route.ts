@@ -14,14 +14,14 @@ async function seedUsers() {
       password TEXT NOT NULL
     );
   `;
-
+//
   const insertedUsers = await Promise.all(
     users.map(async (user) => {
       const hashedPassword = await bcrypt.hash(user.password, 10);
       return sql`
-        INSERT INTO users (id, name, email, password)
-        VALUES (${user.id}, ${user.name}, ${user.email}, ${hashedPassword})
-        ON CONFLICT (id) DO NOTHING;
+        INSERT INTO users (name, email, password)
+        VALUES (${user.name}, ${user.email}, ${hashedPassword})
+        ON CONFLICT (email) DO NOTHING;
       `;
     }),
   );
@@ -29,85 +29,85 @@ async function seedUsers() {
   return insertedUsers;
 }
 
-async function seedInvoices() {
+async function seedParticipants() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
   await sql`
-    CREATE TABLE IF NOT EXISTS invoices (
-      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-      customer_id UUID NOT NULL,
-      amount INT NOT NULL,
-      status VARCHAR(255) NOT NULL,
-      date DATE NOT NULL
-    );
-  `;
-
-  const insertedInvoices = await Promise.all(
-    invoices.map(
-      (invoice) => sql`
-        INSERT INTO invoices (customer_id, amount, status, date)
-        VALUES (${invoice.customer_id}, ${invoice.amount}, ${invoice.status}, ${invoice.date})
-        ON CONFLICT (id) DO NOTHING;
-      `,
-    ),
-  );
-
-  return insertedInvoices;
-}
-
-async function seedCustomers() {
-  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
-
-  await sql`
-    CREATE TABLE IF NOT EXISTS customers (
+    CREATE TABLE IF NOT EXISTS participants (
       id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL,
-      image_url VARCHAR(255) NOT NULL
+      birth_date VARCHAR(20) NOT NULL,
+      image_url VARCHAR(255) NOT NULL,
+      team_id UUID NOT NULL
     );
   `;
 
-  const insertedCustomers = await Promise.all(
-    customers.map(
-      (customer) => sql`
-        INSERT INTO customers (id, name, email, image_url)
-        VALUES (${customer.id}, ${customer.name}, ${customer.email}, ${customer.image_url})
+  const insertedParticipants = await Promise.all(
+    participants.map(
+      (participant) => sql`
+        INSERT INTO participants (name, email, birth_date, image_url, team_id)
+        VALUES (${participant.name}, ${participant.email}, ${participant.birth_date}, ${participant.image_url}, ${participant.team_id});
+      `,
+    ),
+  );
+  return insertedParticipants;
+}
+
+async function seedAppointments() {
+  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS appointments (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      team_id UUID NOT NULL,
+      date VARCHAR(20) NOT NULL,
+      details TEXT NOT NULL,
+      status VARCHAR(20) NOT NULL
+    );
+  `;
+
+  const insertedAppointments = await Promise.all(
+    appointments.map(
+      (appointment) => sql`
+        INSERT INTO appointments (team_id, date, details, status)
+        VALUES (${appointment.team_id}, ${appointment.date}, ${appointment.details}, ${appointment.status})
+        ON CONFLICT DO NOTHING;
+      `,
+    ),
+  );
+
+  return insertedAppointments;
+}
+
+async function seedTeams() {
+  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS teams (
+      id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      name VARCHAR(50) NOT NULL
+    );
+  `;
+  const insertedTeams = await Promise.all(
+    teams.map(
+      (team) => sql`
+        INSERT INTO teams (id, name)
+        VALUES (${team.id}, ${team.name})
         ON CONFLICT (id) DO NOTHING;
       `,
     ),
   );
 
-  return insertedCustomers;
-}
-
-async function seedRevenue() {
-  await sql`
-    CREATE TABLE IF NOT EXISTS revenue (
-      month VARCHAR(4) NOT NULL UNIQUE,
-      revenue INT NOT NULL
-    );
-  `;
-
-  const insertedRevenue = await Promise.all(
-    revenue.map(
-      (rev) => sql`
-        INSERT INTO revenue (month, revenue)
-        VALUES (${rev.month}, ${rev.revenue})
-        ON CONFLICT (month) DO NOTHING;
-      `,
-    ),
-  );
-
-  return insertedRevenue;
+  return insertedTeams;
 }
 
 export async function GET() {
   try {
     const result = await sql.begin((sql) => [
       seedUsers(),
-      seedCustomers(),
-      seedInvoices(),
-      seedRevenue(),
+      seedParticipants(),
+      seedAppointments(),
+      seedTeams(),
     ]);
 
     return Response.json({ message: 'Database seeded successfully' });
