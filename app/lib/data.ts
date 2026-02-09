@@ -9,6 +9,7 @@ import {
 import { formatCurrency } from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const ITEMS_PER_PAGE = 6;
 
 export async function fetchFilteredParticipants(
   query: string,
@@ -22,6 +23,7 @@ export async function fetchFilteredParticipants(
       participants.name ILIKE ${`%${query}%`} OR
       participants.email ILIKE ${`%${query}%`} OR
       participants.birth_date::text ILIKE ${`%${query}%`}
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
   `;
 
     return data;
@@ -31,7 +33,7 @@ export async function fetchFilteredParticipants(
   }
 }
 
-const ITEMS_PER_PAGE = 6;
+
 export async function fetchParticipantsPages(query: string) {
   try {
     const data = await sql`SELECT COUNT(*)
