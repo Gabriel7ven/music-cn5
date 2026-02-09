@@ -1,7 +1,6 @@
 import ParticipantsTable from '@/app/ui/participants/table';
 import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
-import Table from '@/app/ui/invoices/table';
 import { fetchParticipantsPages} from '@/app/lib/data';
 import { lusitana } from '@/app/ui/fonts';
 import { CreateInvoice } from '@/app/ui/invoices/buttons';
@@ -39,4 +38,3 @@ export default async function Page(props: {
     </div>
   );
 }
- 
