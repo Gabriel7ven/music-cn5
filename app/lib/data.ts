@@ -46,7 +46,7 @@ export async function fetchParticipantsPages(query: string) {
 
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
-  } catch (errocr) {
+  } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of participants.');
   }
