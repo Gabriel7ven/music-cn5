@@ -20,6 +20,9 @@ const links = [
   { name: 'Participantes', 
     href: '/dashboard/participants', 
     icon: UserGroupIcon },
+  { name: 'Teams', 
+    href: '/dashboard/teams', 
+    icon: UserGroupIcon },
 ];
 
 export default function NavLinks() {

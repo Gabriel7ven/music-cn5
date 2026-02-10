@@ -89,41 +89,51 @@ export async function fetchParticipantsPages(query: string) {
 //     throw new Error('Failed to fetch the latest invoices.');
 //   }
 // }
+export async function fetchTeams() {
+  try {
+    const teams = await sql`SELECT * FROM teams`;
+    console.log(teams)
+    return teams
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch the team card data.');
+  }
+}
 
-// export async function fetchCardData() {
-//   try {
-//     // You can probably combine these into a single SQL query
-//     // However, we are intentionally splitting them to demonstrate
-//     // how to initialize multiple queries in parallel with JS.
-//     const invoiceCountPromise = sql`SELECT COUNT(*) FROM invoices`;
-//     const customerCountPromise = sql`SELECT COUNT(*) FROM customers`;
-//     const invoiceStatusPromise = sql`SELECT
-//          SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) AS "paid",
-//          SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) AS "pending"
-//          FROM invoices`;
+export async function fetchTeamParticipants(id: string) {
+  try {
+      const participants = await sql`SELECT * FROM participants
+                                      WHERE team_id = ${id}`;
+      return participants
+    } catch (error) {
+      console.error('Database Error:', error);
+      throw new Error('Failed to fetch team participants.');
+    }
+}
 
-//     const data = await Promise.all([
-//       invoiceCountPromise,
-//       customerCountPromise,
-//       invoiceStatusPromise,
-//     ]);
+export async function fetchCardData() {
+  try {
+    const teamCountPromise = sql`SELECT COUNT(*) FROM teams`;
+    const participantCountPromise = sql`SELECT COUNT(*) FROM participants`;
 
-//     const numberOfInvoices = Number(data[0][0].count ?? '0');
-//     const numberOfCustomers = Number(data[1][0].count ?? '0');
-//     const totalPaidInvoices = formatCurrency(data[2][0].paid ?? '0');
-//     const totalPendingInvoices = formatCurrency(data[2][0].pending ?? '0');
+    const data = await Promise.all([
+      teamCountPromise,
+      participantCountPromise,
 
-//     return {
-//       numberOfCustomers,
-//       numberOfInvoices,
-//       totalPaidInvoices,
-//       totalPendingInvoices,
-//     };
-//   } catch (error) {
-//     console.error('Database Error:', error);
-//     throw new Error('Failed to fetch card data.');
-//   }
-// }
+    ]);
+
+    const numberOfTeams = Number(data[0][0].count ?? '0');
+    const numberOfParticipants = Number(data[1][0].count ?? '0');
+
+    return {
+      numberOfTeams,
+      numberOfParticipants,
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch card data.');
+  }
+}
 
 // const ITEMS_PER_PAGE = 6;
 // export async function fetchFilteredInvoices(
