@@ -46,9 +46,9 @@ export async function fetchParticipantsPages(query: string) {
 
     const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
     return totalPages;
-  } catch (error) {
+  } catch (errocr) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    throw new Error('Failed to fetch total number of participants.');
   }
 }
 // export async function fetchRevenue() {
