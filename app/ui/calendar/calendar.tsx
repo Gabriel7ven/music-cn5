@@ -2,11 +2,13 @@
 
 import React from "react";
 import { Temporal } from "temporal-polyfill";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Calendar() {
-const [month, setMonth] = useState(Temporal.Now.plainDateISO().month);
-const [year, setYear] = useState(Temporal.Now.plainDateISO().year);
+const [month, setMonth] = useState(Temporal.Now.plainDateISO().month); // pega o número do mês atual (2, para Fevereiro)
+const [year, setYear] = useState(Temporal.Now.plainDateISO().year);    // pega o número do ano atual (2026, para o ano atual)
+const [monthCalendar, setMonthCalendar] = useState<{ date: Temporal.PlainDate; isInMonth: boolean }[]>([]);
+
 
 const next = () => {
 const { month: nextMonth, year: nextYear } = Temporal.PlainYearMonth.from({
@@ -26,6 +28,44 @@ const previous = () => {
   setYear(prevYear);
 };
 
+
+  useEffect(() => {
+    // const fiveWeeks = 5 * 7;
+    // const sixWeeks = 6 * 7;
+    const startOfMonth = Temporal.PlainDate.from({ year, month, day: 1 }); // year=2026,  month=2, day=1
+    
+    const monthLength = startOfMonth.daysInMonth;     // 28
+    // const dayOfWeekMonthStartedOn = startOfMonth.dayOfWeek - 1; 
+    // Tirando o domingo do sétimo dia e lançando para o lugar correto, o primeiro dia da semana
+    // Dias antes de começar o mês propriamente dito
+    const dayOfWeekMonthStartedOn = (startOfMonth.dayOfWeek % 7)  // o dia da semana em ISO 8601, quando dividido (%) por 7 equivale à quantidade de dias antes de começar o mês propriamente dito. 
+    // Calculando a quantidade de semanas dinamicamente
+    const weeks = Math.ceil((dayOfWeekMonthStartedOn + monthLength) / 7)
+    // Calculate the overall length including days from the previous and next months to be shown
+    const length =
+      // dayOfWeekMonthStartedOn + monthLength > fiveWeeks ? sixWeeks : fiveWeeks;
+       weeks * 7;
+
+    // Create blank array
+    const calendar = new Array(length)
+      .fill({})
+      // Populate each day in the array
+      .map((_, index) => {
+        const date = startOfMonth.add({
+          days: index - dayOfWeekMonthStartedOn,
+        });
+        return {
+          isInMonth: !(
+            index < dayOfWeekMonthStartedOn ||
+            index - dayOfWeekMonthStartedOn >= monthLength
+          ),
+          date,
+        };
+      });
+
+    setMonthCalendar(calendar);
+  }, [year, month]);
+
   return (
   <div className="flex-grow flex flex-col max-h-screen">
     <div className="flex justify-start mb-4">
@@ -43,7 +83,28 @@ const previous = () => {
         year: "numeric",
       })}
     </h2>
+
+    <div className="grid grid-cols-7">
+      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+        (name, index) => (<div key={index}>{name}</div>)
+      )}
+    </div>
+    <div className="grid grid-cols-7 flex-grow  gap-1 overflow-hidden rounded-xl ">
+      {monthCalendar.map((day, index) => (
+        <div
+          key={index}
+          className={`cursor-pointer p-2 ${
+            day.isInMonth
+            ? "bg-blue-50 hover:bg-slate-200"
+            : "bg-gray-50 hover:bg-slate-200 font-light text-slate-400"
+          }`}
+        >
+          {day.date.day}
+        </div>
+      ))}
+    </div>
   </div>
+  
 );
 }
 
