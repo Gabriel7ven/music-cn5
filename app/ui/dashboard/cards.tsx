@@ -61,7 +61,7 @@ export async function TeamCard({
   const participants = await fetchTeamParticipants(id);
   if(!Boolean(participants[0])) return
   return (
-    <div className="rounded-xl bg-gray-100 p-2">
+    <div className="rounded-xl w-full sm:w-auto bg-gray-100 p-2">
       <div className="rounded-xl h-full flex flex-col bg-white p-7">
         <div className='bg-gray-100 flex justify-between mb-3'>
             <div>
