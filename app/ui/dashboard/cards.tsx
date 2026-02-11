@@ -37,9 +37,10 @@ export default async function CardWrapper() {
 export async function TeamCardWrapper() {
   const teams = await fetchTeams();
   return (
-    <div className="flex gap-10">
+    <div className="flex flex-wrap justify-center sm:justify-start  gap-10">
       {teams.map((team) => {
-        return <TeamCard title="teste" key={team.id} team={team}/>
+        console.log(typeof team)
+        return <TeamCard title="teste" key={team.id} id={team.id} name={team.name}/>
       })}
       
       {/* <TeamCard title="teste"  /> */}
@@ -49,20 +50,24 @@ export async function TeamCardWrapper() {
 
 export async function TeamCard({
   title,
-  team,
+  id,
+  name,
 }: {
   title: string;
-  team: Team;
+  id: string;
+  name: string;
 }) {
 
-  const participants = await fetchTeamParticipants(team.id);
+  const participants = await fetchTeamParticipants(id);
   if(!Boolean(participants[0])) return
   return (
     <div className="rounded-xl bg-gray-100 p-2">
       <div className="rounded-xl h-full flex flex-col bg-white p-7">
-        <div className='bg-gray-100 flex justify-end'>
-            
-            <div className='rounded-2xl bg-blue-500 font-bold text-white w-7 h-7 flex justify-center items-center'>
+        <div className='bg-gray-100 flex justify-between mb-3'>
+            <div>
+              <p className="text-xs">Participantes:</p>
+            </div>
+            <div className='rounded-2xl bg-blue-500 font-bold text-white w-5 h-5 flex justify-center items-center'>
               <p>
                 {participants.length}
               </p>
@@ -71,8 +76,8 @@ export async function TeamCard({
         <div className="flex flex-col gap-2">
           {participants
             .sort((a, b) =>
-              Number(b.name === team.name) -
-              Number(a.name === team.name)
+              Number(b.name === name) -
+              Number(a.name === name)
             )
             .map((participant) => (
                 <div className="flex gap-3" key={participant.id}>
@@ -85,7 +90,7 @@ export async function TeamCard({
                   />
                   <p
                     className={
-                      participant.name === team.name
+                      participant.name === name
                       ? "font-bold border-b"
                       : "font-normal"
                     }
