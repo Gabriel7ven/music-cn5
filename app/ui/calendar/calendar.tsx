@@ -77,19 +77,19 @@ const previous = () => {
       </button>
     </div>
     {/* Add this div: */}
-    <h2 className="text-lg font-semibold">
-      {Temporal.PlainDate.from({ year, month, day: 1 }).toLocaleString("en", {
+    <h2 className="text-lg font-semibold mt-5 mb-5">
+      {Temporal.PlainDate.from({ year, month, day: 1 }).toLocaleString("pt", {
         month: "long",
         year: "numeric",
-      })}
+      }).toUpperCase()}
     </h2>
 
     <div className="grid grid-cols-7">
-      {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+      {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(
         (name, index) => (<div key={index}>{name}</div>)
       )}
     </div>
-    <div className="grid grid-cols-7 flex-grow  gap-1 overflow-hidden rounded-xl ">
+    <div className="grid grid-cols-7 w-full  md:flex-grow  gap-1 overflow-hidden rounded-xl text-sm ">
       {monthCalendar.map((day, index) => (
         <div
           key={index}
