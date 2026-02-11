@@ -7,6 +7,8 @@ import {
 import { lusitana } from '@/app/ui/fonts';
 import { fetchCardData, fetchTeams, fetchTeamParticipants } from '@/app/lib/data';
 import clsx from 'clsx';
+import { Team } from '@/app/lib/definitions';
+import Image from 'next/image';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -37,7 +39,7 @@ export async function TeamCardWrapper() {
   return (
     <div className="flex gap-10">
       {teams.map((team) => {
-        return <TeamCard title="teste" key={team.id} team_id={team.id}/>
+        return <TeamCard title="teste" key={team.id} team={team}/>
       })}
       
       {/* <TeamCard title="teste"  /> */}
@@ -47,23 +49,53 @@ export async function TeamCardWrapper() {
 
 export async function TeamCard({
   title,
-  team_id,
+  team,
 }: {
   title: string;
-  team_id: string;
+  team: Team;
 }) {
 
-  const participants = await fetchTeamParticipants(team_id);
+  const participants = await fetchTeamParticipants(team.id);
   if(!Boolean(participants[0])) return
   return (
     <div className="rounded-xl bg-gray-100 p-2">
-      <div className="rounded-xl bg-white p-4">
-        {participants.map((participant) => (
-          <p key={participant.id} className={clsx(
-            "bg-white",
-            {"bg-blue-500" : participant.id === team_id}
-          )}>{participant.name}</p>
-        ))}
+      <div className="rounded-xl h-full flex flex-col bg-white p-7">
+        <div className='bg-gray-100 flex justify-end'>
+            
+            <div className='rounded-2xl bg-blue-500 font-bold text-white w-7 h-7 flex justify-center items-center'>
+              <p>
+                {participants.length}
+              </p>
+            </div>
+          </div>
+        <div className="flex flex-col gap-2">
+          {participants
+            .sort((a, b) =>
+              Number(b.name === team.name) -
+              Number(a.name === team.name)
+            )
+            .map((participant) => (
+                <div className="flex gap-3" key={participant.id}>
+                  <Image 
+                    src={participant.image_url}
+                    width={25}
+                    height={20}
+                    className='rounded-xl shrink-0'
+                    alt={participant.name}
+                  />
+                  <p
+                    className={
+                      participant.name === team.name
+                      ? "font-bold border-b"
+                      : "font-normal"
+                    }
+                    >
+                    {participant.name}
+                  </p>
+                </div>
+            
+            ))}
+        </div>
       </div>
     </div>
   )
