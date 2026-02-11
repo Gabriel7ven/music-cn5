@@ -37,7 +37,7 @@ export default async function CardWrapper() {
 export async function TeamCardWrapper() {
   const teams = await fetchTeams();
   return (
-    <div className="flex flex-wrap justify-center sm:justify-start  gap-10">
+    <div className="flex flex-wrap justify-center sm:justify-start  gap-5">
       {teams.map((team) => {
         console.log(typeof team)
         return <TeamCard title="teste" key={team.id} id={team.id} name={team.name}/>

@@ -3,7 +3,9 @@
 import React from "react";
 import { Temporal } from "temporal-polyfill";
 import { useState, useEffect } from "react";
+// import { teste } from "@/app/lib/utils";
 
+// teste("Eita que bacana!")
 export default function Calendar() {
 const [month, setMonth] = useState(Temporal.Now.plainDateISO().month); // pega o número do mês atual (2, para Fevereiro)
 const [year, setYear] = useState(Temporal.Now.plainDateISO().year);    // pega o número do ano atual (2026, para o ano atual)

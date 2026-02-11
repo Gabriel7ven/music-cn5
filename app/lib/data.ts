@@ -89,22 +89,22 @@ export async function fetchParticipantsPages(query: string) {
 //     throw new Error('Failed to fetch the latest invoices.');
 //   }
 // }
-export async function fetchTeams(): Promise<Team[]> {
+export async function fetchTeams() {
   try {
-    const teams = await sql<Team[]>`SELECT * FROM teams`;
+    const teams = await sql`SELECT * FROM teams`;
     console.log(teams)
-    return teams;
+    return teams
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the team card data.');
   }
 }
 
-export async function fetchTeamParticipants(id: string): Promise<Participant[]> {
+export async function fetchTeamParticipants(id: string) {
   try {
-      const participants = await sql<Participant[]>`SELECT * FROM participants
+      const participants = await sql`SELECT * FROM participants
                                       WHERE team_id = ${id}`;
-      return participants;
+      return participants
     } catch (error) {
       console.error('Database Error:', error);
       throw new Error('Failed to fetch team participants.');
