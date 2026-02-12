@@ -129,6 +129,21 @@ export async function fetchMonthAppointmens(year: number, month: number) {
   }
 }
 
+export async function createAppointment({ name, details, date }: { name: string; details: string; date: string }) {
+  try {
+    const inserted = await sql`
+      INSERT INTO appointments (name, details, date)
+      VALUES (${name}, ${details}, ${date})
+      RETURNING name, details, date
+    `;
+
+    return inserted[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to create appointment.');
+  }
+}
+
 
 
 export async function fetchCardData() {

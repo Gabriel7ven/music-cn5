@@ -15,7 +15,12 @@ export default function Calendar() {
   const [month, setMonth] = useState(today.month);
   const [year, setYear] = useState(today.year);
   const [monthAppointments, setMonthAppointments] = useState<Appointment[]>([]);
-  const [openTooltip, setOpenTooltip] = useState<string | null>(null);
+  // Drawer / form state
+  const [drawerDate, setDrawerDate] = useState<string | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formDetails, setFormDetails] = useState("");
+  const [formTime, setFormTime] = useState("");
+  const [saving, setSaving] = useState(false);
 
   // 🔹 Navegação
   const next = () => {
@@ -59,12 +64,7 @@ export default function Calendar() {
     return map;
   }, [monthAppointments]);
 
-  // Fecha tooltip ao clicar fora
-  useEffect(() => {
-    const handler = () => setOpenTooltip(null);
-    document.addEventListener("click", handler);
-    return () => document.removeEventListener("click", handler);
-  }, []);
+  // (tooltip removido — clique fora não necessário)
 
   // 🔹 Gerar calendário dinamicamente com useMemo
   const monthCalendar = useMemo(() => {
@@ -150,6 +150,7 @@ export default function Calendar() {
           return (
             <div
               key={index}
+              onClick={() => day.isInMonth && setDrawerDate(dateKey)}
               className={`relative p-3 rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
                 ${day.isInMonth ? 'bg-white hover:shadow-md' : 'bg-gray-50 text-gray-400'}
               `}
@@ -161,32 +162,9 @@ export default function Calendar() {
               {/* Mobile: bolinha com tooltip; md+: badges */}
               {cellAppointments.length > 0 && (
                 <>
-                  {/* Mobile dot */}
+                  {/* Mobile: bolinha indicadora (tooltip removido) */}
                   <div className="md:hidden mt-2">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenTooltip(openTooltip === dateKey ? null : dateKey);
-                      }}
-                      className="w-4 h-4 rounded-full bg-blue-600 block"
-                      aria-expanded={openTooltip === dateKey}
-                      aria-label={`Mostrar compromissos de ${day.date.toString()}`}
-                    />
-
-                    {openTooltip === dateKey && (
-                      <div
-                        className="absolute z-50 left-1/2 top-16 -translate-x-1/2 w-44 bg-white border shadow-md rounded-md p-2 text-xs"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="font-medium text-slate-700 mb-1">Compromissos</div>
-                        <div className="flex flex-col gap-1">
-                          {cellAppointments.map((a, i) => (
-                            <div key={i} className="truncate">{a.name}</div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <div className="w-4 h-4 rounded-full bg-blue-600 block" aria-hidden="true" />
                   </div>
 
                   {/* Badges for md+ */}
@@ -210,6 +188,75 @@ export default function Calendar() {
           );
         })}
       </div>
+
+      {/* Drawer lateral para criar compromisso */}
+      {drawerDate && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setDrawerDate(null)} />
+          <div className="relative ml-auto w-full max-w-[420px] h-full bg-white shadow-2xl p-6 overflow-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Novo compromisso</h3>
+              <button className="text-slate-500" onClick={() => setDrawerDate(null)}>Fechar</button>
+            </div>
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!formName) return;
+                setSaving(true);
+                try {
+                  const isoDate = drawerDate + (formTime ? `T${formTime}` : "T00:00:00");
+                  const payload = { name: formName, details: formDetails, date: isoDate };
+                  const res = await fetch('/api/appointments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                  });
+                  if (!res.ok) throw new Error('Failed to create');
+                  const created = await res.json();
+                  setMonthAppointments((prev) => [...prev, created]);
+                  // reset
+                  setFormName('');
+                  setFormDetails('');
+                  setFormTime('');
+                  setDrawerDate(null);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            >
+              <div className="mb-3">
+                <label className="block text-sm text-slate-700 mb-1">Data</label>
+                <div className="text-sm text-slate-600">{drawerDate}</div>
+              </div>
+
+              <div className="mb-3">
+                <label className="block text-sm text-slate-700 mb-1">Nome</label>
+                <input value={formName} onChange={(e) => setFormName(e.target.value)} className="w-full border px-2 py-1 rounded-md" />
+              </div>
+
+              <div className="mb-3">
+                <label className="block text-sm text-slate-700 mb-1">Detalhes</label>
+                <textarea value={formDetails} onChange={(e) => setFormDetails(e.target.value)} className="w-full border px-2 py-1 rounded-md" rows={3} />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm text-slate-700 mb-1">Hora (opcional)</label>
+                <input type="time" value={formTime} onChange={(e) => setFormTime(e.target.value)} className="w-full border px-2 py-1 rounded-md" />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button type="submit" className="btn btn-blue" disabled={saving}>
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+                <button type="button" className="text-sm text-slate-500" onClick={() => setDrawerDate(null)}>Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
