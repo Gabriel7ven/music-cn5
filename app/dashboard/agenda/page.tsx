@@ -2,7 +2,7 @@ import Calendar from '@/app/ui/calendar/calendar';
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col p-1">
+    <div className="pt-2 min-h-screen flex flex-col">
       <Calendar />
     </div>
   );

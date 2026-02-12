@@ -77,10 +77,12 @@ export default function Calendar() {
     const monthLength = startOfMonth.daysInMonth;
     const dayOfWeekMonthStartedOn = startOfMonth.dayOfWeek % 7;
 
+    // N° de semanas
     const weeks = Math.ceil(
       (dayOfWeekMonthStartedOn + monthLength) / 7
     );
 
+    // Total de dias (incluindo os que pertencem aos meses anterior e posterior)
     const length = weeks * 7;
 
     return new Array(length).fill(null).map((_, index) => {
@@ -101,7 +103,7 @@ export default function Calendar() {
   return (
     <div className="flex-grow flex flex-col max-h-screen">
       {/* Navegação */}
-      <div className="flex justify-start mb-4">
+      <div className="flex justify-start mb-2">
         <button
           className="btn btn-blue w-[120px] me-2"
           onClick={previous}
@@ -151,11 +153,11 @@ export default function Calendar() {
             <div
               key={index}
               onClick={() => day.isInMonth && setDrawerDate(dateKey)}
-              className={`relative p-3 rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
+              className={`p-[2px] relative rounded-sm sm:rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
                 ${day.isInMonth ? 'bg-white hover:shadow-md' : 'bg-gray-50 text-gray-400'}
               `}
             >
-              <div className="flex justify-between items-start">
+              <div className="flex justify-center items-start">
                 <div className="text-sm font-medium text-slate-700">{day.date.day}</div>
               </div>
 
@@ -163,16 +165,16 @@ export default function Calendar() {
               {cellAppointments.length > 0 && (
                 <>
                   {/* Mobile: bolinha indicadora (tooltip removido) */}
-                  <div className="md:hidden mt-2">
+                  {/* <div className="md:hidden mt-2">
                     <div className="w-4 h-4 rounded-full bg-blue-600 block" aria-hidden="true" />
-                  </div>
+                  </div> */}
 
                   {/* Badges for md+ */}
-                  <div className="hidden md:flex mt-2 flex-col gap-1">
+                  <div className=" md:flex mt-2 flex-col gap-1">
                     {cellAppointments.slice(0, 3).map((appt, i) => (
                       <div
                         key={i}
-                        className="inline-flex items-center gap-2 text-xs font-medium bg-blue-600 text-white px-2 py-1 rounded-full max-w-full truncate"
+                        className="text-[8px] pl-[2px] rounded-[2px] w-full inline-flex items-center gap-2 font-medium bg-blue-600 text-white sm:px-2 sm:py-1 sm:rounded-full sm:text-xs sm:max-w-full truncate"
                         title={appt.name}
                       >
                         {appt.name}
