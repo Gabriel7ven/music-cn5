@@ -111,6 +111,26 @@ export async function fetchTeamParticipants(id: string) {
     }
 }
 
+
+export async function fetchMonthAppointmens(year: number, month: number) {
+  try {
+    const monthAppointments = await sql`
+      SELECT name, details, date
+      FROM appointments
+      WHERE EXTRACT(YEAR FROM date) = ${year}
+      AND EXTRACT(MONTH FROM date) = ${month}
+      ORDER BY date ASC
+    `;
+
+    return monthAppointments;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch month appointments.');
+  }
+}
+
+
+
 export async function fetchCardData() {
   try {
     const teamCountPromise = sql`SELECT COUNT(*) FROM teams`;

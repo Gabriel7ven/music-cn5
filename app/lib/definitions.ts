@@ -23,13 +23,10 @@ export type Team = {
   name: string;
 }
 export type Appointment = {
-  id: string;
-  team_id: string;
-  date: string;
+  name: string;
   details: string;
-  // In TypeScript, this is called a string union type.
-  // It means that the "status" property can only be one of the two strings: 'pending' or 'paid'.
-  status: 'pending' | 'completed';
+  // status: 'pending' | 'completed';
+  date: Date;
 };
 
 // export type Revenue = {
