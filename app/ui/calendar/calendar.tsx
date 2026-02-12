@@ -103,24 +103,14 @@ export default function Calendar() {
   return (
     <div className="flex-grow flex flex-col max-h-screen">
       {/* Navegação */}
-      <div className="flex justify-start mb-2">
+      <div className="w-[375px] flex gap-10 justify-between mb-2">
         <button
-          className="btn btn-blue w-[120px] me-2"
+          className="flex btn btn-blue sm:w-[120px]"
           onClick={previous}
         >
-          &lt; Previous
+          &lt; <span className="hidden sm:block">Previous</span>
         </button>
 
-        <button
-          className="btn btn-blue w-[120px]"
-          onClick={next}
-        >
-          Next &gt;
-        </button>
-      </div>
-
-      {/* Título */}
-      <div className="flex items-center justify-between mt-6 mb-6">
         <div className="flex items-baseline gap-4">
           <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 capitalize">
             {Temporal.PlainDate.from({ year, month, day: 1 }).toLocaleString("pt", {
@@ -131,6 +121,27 @@ export default function Calendar() {
             {year}
           </span>
         </div>
+
+        <button
+          className="flex btn btn-blue sm:w-[120px]"
+          onClick={next}
+        >
+          <span className="hidden sm:block">Next</span> &gt;
+        </button>
+      </div>
+
+      {/* Título */}
+      <div className="flex items-center justify-between mt-6 mb-6">
+        {/* <div className="flex items-baseline gap-4">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 capitalize">
+            {Temporal.PlainDate.from({ year, month, day: 1 }).toLocaleString("pt", {
+              month: "long",
+            })}
+          </h2>
+          <span className="inline-block text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
+            {year}
+          </span>
+        </div> */}
         <div className="text-sm text-slate-500">Agenda mensal</div>
       </div>
 
