@@ -152,7 +152,7 @@ export default function Calendar() {
           return (
             <div
               key={index}
-              onClick={() => day.isInMonth && setDrawerDate(dateKey)}
+              // onClick={() => day.isInMonth && setDrawerDate(dateKey)}
               className={`p-[2px] relative rounded-sm sm:rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
                 ${day.isInMonth ? 'bg-white hover:shadow-md' : 'bg-gray-50 text-gray-400'}
               `}
