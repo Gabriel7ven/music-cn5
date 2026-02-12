@@ -174,7 +174,7 @@ export default function Calendar() {
                     {cellAppointments.slice(0, 3).map((appt, i) => (
                       <div
                         key={i}
-                        className="text-[8px] pl-[2px] rounded-[2px] w-full inline-flex items-center gap-2 font-medium bg-blue-600 text-white sm:px-2 sm:py-1 sm:rounded-full sm:text-xs sm:max-w-full truncate"
+                        className="text-[8px] pl-[2px] rounded-[2px] w-full inline-flex items-center gap-2 font-medium bg-blue-400 text-white sm:px-2 sm:py-1 sm:rounded-full sm:text-xs sm:max-w-full truncate"
                         title={appt.name}
                       >
                         {appt.name}
