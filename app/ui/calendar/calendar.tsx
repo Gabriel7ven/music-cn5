@@ -1,5 +1,6 @@
 "use client";
 
+import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
 import React, { useState, useEffect, useMemo } from "react";
 import { Temporal } from "temporal-polyfill";
 
@@ -11,7 +12,6 @@ type Appointment = {
 
 export default function Calendar() {
   const today = Temporal.Now.plainDateISO();
-
   const [month, setMonth] = useState(today.month);
   const [year, setYear] = useState(today.year);
   const [monthAppointments, setMonthAppointments] = useState<Appointment[]>([]);
@@ -22,6 +22,8 @@ export default function Calendar() {
   const [formTime, setFormTime] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [popoverOverflowRight, setPopoverOverflowRight] = useState(false);
+    const [popoverOverflowLeft, setPopoverOverflowLeft] = useState(false);
   // 🔹 Navegação
   const next = () => {
     const { month: nextMonth, year: nextYear } =
@@ -100,6 +102,7 @@ export default function Calendar() {
     });
   }, [year, month]);
 
+
   return (
     <div className="flex-grow flex flex-col max-h-screen">
       {/* Navegação */}
@@ -159,18 +162,35 @@ export default function Calendar() {
         {monthCalendar.map((day, index) => {
           const dateKey = day.date.toString();
           const cellAppointments = appointmentMap.get(dateKey) ?? [];
-
+          // return da callback map()
           return (
             <div
               key={index}
-              onClick={() => day.isInMonth && setDrawerDate(dateKey)}
-              className={`p-[2px] relative rounded-sm sm:rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
+              onClick={(e) => {
+                e.stopPropagation();
+                
+                
+                // alert(html.getBoundingClientRect().right)
+              }}
+               
+                // divF.classList.add("w-30", "h-30", "rounded-full", "bg-green-600", "absolute", `top-3`, `bottom-3`, `left-3`)
+    
+              //{() => day.isInMonth && setDrawerDate(dateKey)}
+              className={`p-[2px] relative   rounded-sm sm:rounded-lg cursor-pointer min-h-[88px] flex flex-col justify-between border
                 ${day.isInMonth ? 'bg-white hover:shadow-md' : 'bg-gray-50 text-gray-400'}
               `}
             >
               <div className="flex justify-center items-start">
-                <div className="text-sm font-medium text-slate-700">{day.date.day}</div>
+                <div className="text-sm font-medium text-slate-700" id={dateKey}>{day.date.day}</div>
               </div>
+
+                {/* <div className='hidden w-10 h-5 border bg-blue-100 rounded-5 bg-green-600 absolute top-2' id={`${dateKey}${day.date.day}`}>
+                  <button>Alterar</button> 
+                  <button>Deletar</button> 
+                </div> */}
+              
+        
+
 
               {/* Mobile: bolinha com tooltip; md+: badges */}
               {cellAppointments.length > 0 && (
@@ -187,6 +207,32 @@ export default function Calendar() {
                         key={i}
                         className="text-[9px] pl-[2px] rounded-[2px] w-full inline-flex items-center gap-2 font-medium bg-blue-400 text-white sm:px-2 sm:py-1 sm:rounded-full sm:text-xs sm:max-w-full truncate"
                         title={appt.name}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          
+                       // 
+                      const divPopover = document.getElementById(`${dateKey}${day.date.day}`)
+                      const divPaiClasses = divPopover?.classList;
+                      divPaiClasses?.toggle("hidden");
+                      const paragraph = divPopover?.firstElementChild
+                      
+                      const html = document.getElementsByTagName("html")[0];
+                      const htmlRigth = html.getBoundingClientRect().right;
+                      const htmlLeft = html.getBoundingClientRect().left;
+                      const popoverRigth = divPopover?.getBoundingClientRect().right;
+                      const popoverLeft = divPopover?.getBoundingClientRect().left;
+                      // let popoverOverflow = false;
+                      if (popoverRigth > htmlRigth) {
+                        setPopoverOverflowRight(true);
+                      } else {
+                        setPopoverOverflowRight(false);
+                      }
+                   
+                      
+                      if (paragraph) {
+                        paragraph.innerHTML = (e.target as HTMLElement).innerHTML;
+                      } 
+                        }}  
                       >
                         {appt.name}
                       </div>
@@ -194,13 +240,29 @@ export default function Calendar() {
                     {cellAppointments.length > 3 && (
                       <div className="text-xs text-slate-500">+{cellAppointments.length - 3} outros</div>
                     )}
+                    
+                    <div className={`${popoverOverflowRight ? '-translate-x-[130px]' :  '-translate-x-[36px]'} flex flex-col items-center gap-5  rounded-md shadow-xl bg-white z-10 hidden p-3 w-[200px] h-auto border absolute bottom-10`} id={`${dateKey}${day.date.day}`}>
+                      <p className='text-lg' id="singer-name"></p>
+                      <div className="w-full flex justify-center">
+                        <div className='flex gap-5 justify-'>
+                          <button className="p-2 bg-yellow-400 text-black rounded-md">Alterar</button> 
+                          <button className="p-2 bg-red-500 text-white rounded-md">Deletar</button> 
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
             </div>
           );
         })}
+        
       </div>
+      
+
+        
+       
+
 
       {/* Drawer lateral para criar compromisso */}
       {drawerDate && (
