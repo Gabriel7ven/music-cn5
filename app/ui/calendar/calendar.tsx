@@ -222,11 +222,14 @@ export default function Calendar() {
                       const popoverRigth = divPopover?.getBoundingClientRect().right;
                       const popoverLeft = divPopover?.getBoundingClientRect().left;
                       // let popoverOverflow = false;
-                      if (popoverRigth > htmlRigth) {
-                        setPopoverOverflowRight(true);
-                      } else {
-                        setPopoverOverflowRight(false);
+                      if(popoverRigth) {
+                        if (popoverRigth > htmlRigth) {
+                          setPopoverOverflowRight(true);
+                        } else {
+                          setPopoverOverflowRight(false);
+                        }
                       }
+                      
                    
                       
                       if (paragraph) {
