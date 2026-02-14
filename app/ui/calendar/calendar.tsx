@@ -166,9 +166,7 @@ export default function Calendar() {
           return (
             <div
               key={index}
-              onClick={(e) => {
-                {() => day.isInMonth && setDrawerDate(dateKey)}
-              }}
+              onClick={() => day.isInMonth && setDrawerDate(dateKey)}
                
                 // divF.classList.add("w-30", "h-30", "rounded-full", "bg-green-600", "absolute", `top-3`, `bottom-3`, `left-3`)
     
